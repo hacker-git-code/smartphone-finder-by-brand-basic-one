@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Finder AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .message-box {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+        .chatbot-message, .user {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .chatbot-message {
+            background-color: #e0e0e0;
+            max-width: 80%;
+        }
+        .user {
+            background-color: #d1e7ff;
+            text-align: right;
+            max-width: 80%;
+            margin-left: auto;
+        }
+        .input-section {
+            display: flex;
+            justify-content: space-between;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 15%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .typing {
+            color: #ccc;
+            display: inline-block;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <h1>Smartphone Finder AI</h1>
+        <div class="message-box" id="messageBox">
+            <div class="chatbot-message">
+                Hello! I can help you find the best devices. What are you looking for today?
+            </div>
+        </div>
+        <div class="input-section">
+            <input type="text" id="userInput" placeholder="Ask me about devices..." autocomplete="off">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Add event listeners for the send button and Enter key
+        document.getElementById("sendBtn").addEventListener("click", submitMessage);
+        document.getElementById("userInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                submitMessage();
+            }
+        });
+
+        function submitMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (userInput.trim() === "") return;
+
+            displayMessage(userInput, "user");
+
+            const botResponse = getDeviceSuggestions(userInput);
+            displayBotTyping(botResponse);
+
+            document.getElementById("userInput").value = ""; // Clear input
+            scrollToBottom();
+        }
+
+        function displayMessage(message, sender) {
+            const messageBox = document.getElementById("messageBox");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add(sender);
+            messageDiv.innerText = message;
+            messageBox.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function displayBotTyping(response) {
+            const messageBox = document.getElementById("messageBox");
+
+            const typingDiv = document.createElement("div");
+            typingDiv.classList.add("chatbot-message");
+            typingDiv.innerHTML = '<div class="typing">...</div>';
+            messageBox.appendChild(typingDiv);
+            scrollToBottom();
+
+            // Simulate typing letter by letter
+            let i = 0;
+            const typingSpeed = 50; // Speed of typing in milliseconds
+            const typingElement = typingDiv.querySelector('.typing');
+            
+            const interval = setInterval(function() {
+                if (i < response.length) {
+                    typingElement.innerHTML += response.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    typingDiv.innerHTML = response; // Replace typing with the actual response
+                    scrollToBottom();
+                }
+            }, typingSpeed);
+        }
+
+        function scrollToBottom() {
+            const messageBox = document.getElementById("messageBox");
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+
+        function getDeviceSuggestions(query) {
+            const queryLower = query.toLowerCase();
+
+            if (queryLower.includes('samsung')) {
+                return `The latest Samsung phones are:
+                - Samsung Galaxy S23: Visit the official site <a href="https://www.samsung.com/s23" target="_blank">Samsung S23</a>.
+                - Samsung Galaxy Z Fold 5: Visit the official site <a href="https://www.samsung.com/galaxy-z-fold-5" target="_blank">Samsung Z Fold 5</a>.`;
+            } else if (queryLower.includes('apple')) {
+                return `The latest Apple phones are:
+                - iPhone 15: Visit the official site <a href="https://www.apple.com/iphone-15" target="_blank">iPhone 15</a>.
+                - iPhone 15 Pro Max: Visit the official site <a href="https://www.apple.com/iphone-15-pro-max" target="_blank">iPhone 15 Pro Max</a>.`;
+            } else if (queryLower.includes('google')) {
+                return `The latest Google phones are:
+                - Google Pixel 8: Visit the official site <a href="https://store.google.com/pixel-8" target="_blank">Pixel 8</a>.
+                - Google Pixel 8 Pro: Visit the official site <a href="https://store.google.com/pixel-8-pro" target="_blank">Pixel 8 Pro</a>.`;
+            } else if (queryLower.includes('latest phone')) {
+                return `Here are some of the latest phones:
+                - Samsung Galaxy S23: <a href="https://www.samsung.com" target="_blank">Samsung</a>.
+                - iPhone 15: <a href="https://www.apple.com" target="_blank">Apple</a>.
+                - Google Pixel 8: <a href="https://store.google.com" target="_blank">Google</a>.`;
+            } else {
+                return 'Sorry, I couldn\'t find any devices matching that query. Try asking about a brand like Samsung, Apple, or Google!';
+            }
+        }
+    </script>
+
+</body>
+</html>

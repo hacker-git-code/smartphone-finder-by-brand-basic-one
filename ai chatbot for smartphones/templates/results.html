@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Results for "{{ search_query }}" within a budget of ${{ budget }}</h1>
+    {% if smartphones %}
+        <ul>
+            {% for phone in smartphones %}
+                <li>{{ phone.name }} - ${{ phone.price }} - <a href="{{ phone.link }}" target="_blank">Buy here</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No smartphones found within your budget.</p>
+    {% endif %}
+    <a href="/">Search again</a>
+</body>
+</html>

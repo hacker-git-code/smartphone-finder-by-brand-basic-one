@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Finder AI Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f0f2f5;
+        }
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff;
+        }
+        .dashboard h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+        .open-chat-btn, .close-chat-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .open-chat-btn:hover, .close-chat-btn:hover {
+            background-color: #0056b3;
+        }
+        .chat-container {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+        .message-box {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 8px;
+        }
+        .chatbot-message, .user {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .chatbot-message {
+            background-color: #e0e0e0;
+            margin-left: 10px;
+        }
+        .user {
+            background-color: #d1e7ff;
+            text-align: right;
+            margin-left: auto;
+        }
+        .input-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+        }
+        button {
+            width: 15%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .typing {
+            color: #ccc;
+            display: inline-block;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .device-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .device {
+            width: 45%;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 10px;
+            transition: transform 0.3s;
+        }
+        .device img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .device h4 {
+            font-size: 18px;
+            color: #333;
+        }
+        .device p {
+            font-size: 14px;
+            color: #555;
+        }
+        .device:hover {
+            transform: scale(1.05);
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .device {
+                width: 48%; /* Adjust width for tablets */
+            }
+            .dashboard h1 {
+                font-size: 24px; /* Adjust heading size for smaller screens */
+            }
+            input[type="text"] {
+                width: 70%; /* Make input box smaller on smaller screens */
+            }
+            button {
+                width: 25%; /* Adjust button size */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .device {
+                width: 100%; /* Full width on very small screens */
+                margin-bottom: 20px;
+            }
+            .dashboard h1 {
+                font-size: 20px; /* Further reduce heading size */
+            }
+            .input-section {
+                flex-direction: column; /* Stack input and button vertically */
+                align-items: center;
+            }
+            input[type="text"] {
+                width: 80%; /* Increase input width */
+                margin-bottom: 10px;
+            }
+            button {
+                width: 80%; /* Increase button width */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h1>Smartphone Finder AI Dashboard</h1>
+        <div class="button-container">
+            <button class="open-chat-btn" id="openChatBtn">Open Chat</button>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <h1>Smartphone Finder AI</h1>
+        <div class="message-box" id="messageBox">
+            <div class="chatbot-message">
+                Hello! I can help you find the best devices. Just type a company name (e.g., Samsung, Apple).
+            </div>
+        </div>
+        <div class="input-section">
+            <input type="text" id="userInput" placeholder="Ask me about devices..." autocomplete="off">
+            <button id="sendBtn">Send</button>
+        </div>
+        <button class="close-chat-btn" id="closeChatBtn">Close Chat</button>
+    </div>
+
+    <script>
+        // Dashboard and Chat toggling
+        document.getElementById("openChatBtn").addEventListener("click", function() {
+            document.querySelector(".dashboard").style.display = "none";
+            document.getElementById("chatContainer").style.display = "block";
+        });
+
+        document.getElementById("closeChatBtn").addEventListener("click", function() {
+            document.querySelector(".dashboard").style.display = "flex";
+            document.getElementById("chatContainer").style.display = "none";
+        });
+
+        // Add event listeners for the send button and Enter key
+        document.getElementById("sendBtn").addEventListener("click", submitMessage);
+        document.getElementById("userInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                submitMessage();
+            }
+        });
+
+        function submitMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (userInput.trim() === "") return;
+
+            displayMessage(userInput, "user");
+
+            const botResponse = getDeviceSuggestions(userInput);
+            displayBotTyping(botResponse);
+
+            document.getElementById("userInput").value = ""; // Clear input
+            scrollToBottom();
+        }
+
+        function displayMessage(message, sender) {
+            const messageBox = document.getElementById("messageBox");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add(sender);
+            messageDiv.innerText = message;
+            messageBox.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function displayBotTyping(response) {
+            const messageBox = document.getElementById("messageBox");
+
+            const typingDiv = document.createElement("div");
+            typingDiv.classList.add("chatbot-message");
+            typingDiv.innerHTML = '<div class="typing">...</div>';
+            messageBox.appendChild(typingDiv);
+            scrollToBottom();
+
+            // Simulate typing letter by letter at a faster speed
+            let i = 0;
+            const typingSpeed = 10; // Even faster typing speed
+            const typingElement = typingDiv.querySelector('.typing');
+            
+            const interval = setInterval(function() {
+                if (i < response.length) {
+                    typingElement.innerHTML += response.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    typingDiv.innerHTML = response; // Replace typing with the actual response
+                    scrollToBottom();
+                }
+            }, typingSpeed);
+        }
+
+        function scrollToBottom() {
+            const messageBox = document.getElementById("messageBox");
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }
+
+        function getDeviceSuggestions(query) {
+            const queryLower = query.toLowerCase();
+            const companies = ['samsung', 'apple', 'google', 'xiaomi', 'oneplus'];
+
+            // Check if the query matches any known companies closely
+            const match = companies.find(company => queryLower.includes(company));
+            if (!match) {
+                return `I couldn't find any devices for that. Did you mean one of these: Samsung, Apple, Google, Xiaomi, or OnePlus?`;
+            }
+
+            if (match === 'samsung') {
+                return `Samsung's latest phones:
+                <div class="device-container">
+                    <div class="device">
+                        <a href="https://www.samsung.com/s23" target="_blank">
+                            <img src="https://www.samsung.com/etc/designs/samsung/common/images/phones/galaxy-s23.jpg" alt="Samsung Galaxy S23">
+                        </a>
+                        <h4>Samsung Galaxy S23</h4>
+                        <p>The flagship phone with cutting-edge performance and design.</p>
+                    </div>
+                </div>`;
+            } else if (match === 'apple') {
+                return `Apple's latest phones:
+                <div class="device-container">
+                    <div class="device">
+                        <a href="https://www.apple.com/iphone-14/" target="_blank">
+                            <img src="https://www.apple.com/v/iphone-14/f/images/overview/hero/iphone_14.jpg" alt="iPhone 14">
+                        </a>
+                        <h4>iPhone 14</h4>
+                        <p>The latest from Apple with A15 Bionic chip and excellent camera.</p>
+                    </div>
+                </div>`;
+            } else {
+                return `I have no information about this company yet. Try searching for Samsung, Apple, Google, Xiaomi, or OnePlus.`;
+            }
+        }
+    </script>
+</body>
+</html>

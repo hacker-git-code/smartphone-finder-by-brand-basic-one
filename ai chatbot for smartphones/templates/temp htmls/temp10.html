@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartphone Finder AI Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f7f7f7;
+        }
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff;
+        }
+        .dashboard h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .button-container {
+            display: flex;
+            gap: 20px;
+        }
+        .open-chat-btn {
+            padding: 4Px 40px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .open-chat-btn h4{
+            font-size: medium;
+            text-align: center;
+            margin: 0px -17px auto;
+        }
+        .open-chat-btn:hover {
+            background-color: #0056b3;
+        }
+        .chat-container {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            margin: 35px auto;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #ddd;
+        }
+        .chat-container h1 {
+            font-size: 24px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message-box {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 5px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+        .chatbot-message, .user {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .chatbot-message {
+            background-color: #e0e0e0;
+            margin-left: 10px;
+        }
+        .user {
+            background-color: #d1e7ff;
+            text-align: right;
+            margin-left: auto;
+        }
+        .input-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+        }
+        button {
+            width: 18%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .typing {
+            color: #ccc;
+            display: inline-block;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .device-container {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 20px;
+            flex-wrap: nowrap;
+        }
+        .device {
+            width: 45%;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .device img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .device h4 {
+            font-size: 18px;
+            color: #333;
+        }
+        .device p {
+            font-size: 14px;
+            color: #555;
+        }
+        .device:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Close icon */
+        .close-chat {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.3s;
+        }
+        .close-chat:hover {
+            color: #ff4d4d;
+        }
+
+        /* Stop chat option */
+        .stop-chat {
+            background-color: #fd3838;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 0px;
+            transition: background-color 0.3s;
+        }
+
+        .stop-chat:hover {
+            background-color: #ec0c0c;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .device {
+                width: 48%; /* Adjust width for tablets */
+            }
+            .dashboard h1 {
+                font-size: 28px; /* Adjust heading size for smaller screens */
+            }
+            input[type="text"] {
+                width: 70%; /* Make input box smaller on smaller screens */
+            }
+            button {
+                width: 15%; /* Adjust button size */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .device {
+                width: 100%; /* Full width on very small screens */
+                margin-bottom: 20px;
+            }
+            .dashboard h1 {
+                font-size: 24px; /* Further reduce heading size */
+            }
+            .input-section {
+                flex-direction: column; /* Stack input and button vertically */
+                align-items: center;
+            }
+            input[type="text"] {
+                width: 80%; /* Increase input width */
+                margin-bottom: 10px;
+            }
+            button {
+                width: 80%; /* Increase button width */
+            }
+        }
+
+
+
+
+
+        /* carasoul */
+        .device-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    scroll-snap-type: x mandatory;
+    padding: 20px 0;
+}
+.device {
+    flex: 0 0 auto;
+    width: 300px;
+    scroll-snap-align: start;
+}
+
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h1>Smartphone Finder AI</h1>
+        <div class="button-container">
+            <button class="open-chat-btn" id="openChatBtn"><H4>Open Chat    </H4></button>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="close-chat" id="closeChatBtn">&times;</div>
+        <h1>Smartphone Finder AI</h1>
+        <div class="message-box" id="messageBox">
+            <div class="chatbot-message">
+                Hello! I can help you find the best devices. Just chat with me!
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <input type="text" id="userInput" placeholder="Ask me about devices..." autocomplete="off">
+            <button id="sendBtn">Send</button>
+            <button class="stop-chat" id="save-btn">Save Chat</button>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard and Chat toggling
+        document.getElementById("openChatBtn").addEventListener("click", function() {
+            document.querySelector(".dashboard").style.display = "none";
+            document.getElementById("chatContainer").style.display = "block";
+        });
+
+        document.getElementById("closeChatBtn").addEventListener("click", function() {
+            document.querySelector(".dashboard").style.display = "flex";
+            document.getElementById("chatContainer").style.display = "none";
+        });
+
+        // Add event listeners for the send button, Stop Chat, and Enter key
+        document.getElementById("sendBtn").addEventListener("click", submitMessage);
+        document.getElementById("userInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                submitMessage();
+            }
+        });
+
+        document.getElementById("stopChatBtn").addEventListener("click", stopChat);
+
+        function submitMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (userInput.trim() === "") return;
+
+            appendMessage(userInput, "user");
+            document.getElementById("userInput").value = "";
+
+            const response = getResponse(userInput);
+            setTimeout(() => {
+                appendMessage(response, "chatbot-message");
+            }, 1000);
+        }
+
+        function stopChat() {
+            const messageBox = document.getElementById("messageBox");
+            messageBox.innerHTML = "<div class='chatbot-message'>Chat has been stopped. Feel free to reopen it.</div>";
+            document.getElementById("userInput").disabled = true;
+            document.getElementById("sendBtn").disabled = true;
+        }
+
+        function appendMessage(message, sender) {
+            const messageBox = document.getElementById("messageBox");
+            const messageElement = document.createElement("div");
+            messageElement.classList.add(sender);
+            messageElement.innerHTML = message;
+            messageBox.appendChild(messageElement);
+            messageBox.scrollTop = messageBox.scrollHeight;  // Auto-scroll to the bottom
+        }
+
+        function getResponse(query) {
+            const queryLower = query.toLowerCase();
+            const companies = ['samsung', 'apple', 'google', 'xiaomi', 'oneplus'];
+            const models = [,'iphone 16','iphone 16 plus']
+
+            if (companies.includes(queryLower)) {
+                return getCompanyDevices(queryLower);
+            } else {
+                return `Sorry, I don't have information about "${query}". Try searching for Samsung, Apple, Google, Xiaomi, or OnePlus.`;
+            }
+        }
+
+        function getCompanyDevices(company) {
+            if (company === 'samsung') {
+                return `
+                    <h3>Latest Samsung Devices</h3>
+                    <div class="device-container">
+                        <div class="device">
+                            <a href="https://www.samsung.com/global/galaxy/galaxy-s23/" target="_blank">
+                                <img src="https://www.samsung.com/global/galaxy/galaxy-s23/images/overview/phone-front.jpg" alt="Samsung Galaxy S23">
+                            </a>
+                            <h4>Galaxy S23</h4>
+                            <p>The latest flagship from Samsung with an amazing display and camera.</p>
+                        </div>
+                    </div>`;
+            // } else if (company === 'apple','iphone 15') {
+            //     return `
+            //         <h3>Latest Apple Devices</h3>
+            //         <a href="https://www.apple.com/iphone-15/" target="_blank"><div class="device-container">
+            //             <div class="device">
+                            
+            //                     <img src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-15-model-unselect-gallery-1-202309?wid=5120&hei=2880&fmt=webp&qlt=70&.v=aVFiZEF4WDEvUWJNSU5HRDg4cklnTGdzSmpObkZCM3MrNmJ5SkhESlNDZ1UwRE05YU1MZ0lYWk55ZU5FOENXWkpFd0xhWDVibStLdGRYRmxkNGI4VTdpMGJRT0ppMjh4RlRZQkc0Q3FZZEI4UW55RWdXT3BFc2NrR2VEb1pCOGo&traceId=1" alt="iPhone 15">
+                           
+            //                 <h4>iPhone 15</h4>
+            //                 <p>Your new iPhone awaits. Make it yours.The latest from Apple with A16 Bionic chip and excellent camera.
+            //                     </p>
+            //             </div> </a>
+            //         </div>`;
+            } else if (company === 'apple') {
+                return `
+                    <h3>Latest Apple Devices</h3>
+                    <a href="https://www.apple.com/iphone-16/" target="_blank"><div class="device-container">
+                        <div class="device">
+                            
+                                <img src="https://www.apple.com/v/iphone-16/d/images/overview/welcome/hero_endframe__dtznvlokjeeu_large.png" alt="iPhone 15">
+                           
+                            <h4>iPhone 16</h4>
+                            <p>Your new iPhone awaits. Make it yours.The latest from Apple with A16 Bionic chip and excellent camera.
+                                </p>
+                        </div> </a>
+                    </div>`;    
+
+                } else if (models === 'iphone 16 plus') {
+                return `
+                    <h3>Latest Apple Devices</h3>
+                    <a href="https://www.apple.com/iphone-16-plus/" target="_blank"><div class="device-container">
+                        <div class="device">
+                            
+                                <img src="https://www.apple.com/v/iphone-16-plus/d/images/overview/welcome/hero_endframe__dtznvlokjeeu_large.png" alt="iPhone 15">
+                           
+                            <h4>iPhone 16</h4>
+                            <p>Your new iPhone awaits. Make it yours.The latest from Apple with A16 Bionic chip and excellent camera.
+                                </p>
+                        </div> </a>
+                    </div>`;
+        
+            } else {
+                return `I have no information about this company yet. Try searching for Samsung, Apple, Google, Xiaomi, or OnePlus.`;
+            }
+        }
+
+    function getResponse(query) {
+        const queryLower = query.toLowerCase();
+        const companies = ['samsung', 'apple', 'google', 'xiaomi', 'oneplus'];
+    
+        // Check for known companies
+        if (companies.includes(queryLower)) {
+            return getCompanyDevices(queryLower);
+        }
+    
+        // Check for specific tech queries
+        if (queryLower.includes("camera")) {
+            return "The camera quality varies by device. For example, the Samsung Galaxy S23 has a 50MP camera, while the iPhone 14 has a 12MP rear camera.";
+        } 
+    
+        if (queryLower.includes("battery")) {
+            return "Battery life depends on the device and usage. The iPhone 14 offers up to 20 hours of video playback, while the Samsung Galaxy S23 provides up to 22 hours.";
+        }
+    
+        if (queryLower.includes("comparison")) {
+            return "Would you like to compare Samsung Galaxy S23 with iPhone 14? Or any other devices?";
+        }
+    
+        // Common fallback message for unknown queries
+        if (queryLower.includes("help") || queryLower.includes("commands")) {
+            return "Here are some commands you can try: \n- 'Tell me about Samsung' \n- 'Tell me about iPhone' \n- 'Compare Samsung and iPhone' \n- 'What's the battery life of iPhone 14?' \n- 'Tell me about camera quality'";
+        }
+    
+        // Fallback response for any other queries
+        return `Sorry, I don't have information about "${query}". Try searching for Samsung, Apple, Google, Xiaomi, or OnePlus.`;
+    }
+
+
+
+
+    function getCompanyDevices(company) {
+    const devices = {
+        samsung: [
+            {
+                name: "Galaxy S23",
+                image: "https://www.samsung.com/global/galaxy/galaxy-s23/images/overview/phone-front.jpg",
+                description: "The latest flagship from Samsung with an amazing display and camera.",
+                link: "https://www.samsung.com/global/galaxy/galaxy-s23/"
+            },
+            {
+                name: "Galaxy Z Fold 5",
+                image: "https://www.samsung.com/global/galaxy/z-fold5/images/overview/phone-front.jpg",
+                description: "Samsung's foldable phone with incredible multitasking capabilities.",
+                link: "https://www.samsung.com/global/galaxy/z-fold5/"
+            }
+        ],
+        apple: [
+            {
+                name: "iPhone 16",
+                image: "https://www.apple.com/v/iphone-16/d/images/overview/product-viewer/iphone/all_colors__flhn5cmb1t26_small.jpg",
+                description: "Apple's latest innovation with dynamic island and amazing camera features.",
+                link: "https://www.apple.com/iphone-16/"
+            },
+            {
+                name: "iPhone 16 plus",
+                image: "https://www.apple.com/v/iphone-16/d/images/overview/product-viewer/iphone/all_colors__flhn5cmb1t26_small.jpg",
+                description: "The pro edition of iPhone with advanced titanium design and A17 Bionic.",
+                link: "https://www.apple.com/iphone-16/"
+            }
+        ]
+    };
+
+    if (devices[company]) {
+        let deviceHTML = `<h3>Latest ${company.charAt(0).toUpperCase() + company.slice(1)} Devices</h3>`;
+        deviceHTML += '<div class="device-container">';
+        devices[company].forEach(device => {
+            deviceHTML += `
+                <div class="device">
+                    <a href="${device.link}" target="_blank">
+                        <img src="${device.image}" alt="${device.name}">
+                    </a>
+                    <h4>${device.name}</h4>
+                    <p>${device.description}</p>
+                </div>
+            `;
+        });
+        deviceHTML += '</div>';
+        return deviceHTML;
+    } else {
+        return `Sorry, I don't have information about "${company}".`;
+    }
+}
+
+
+document.querySelector('.device-container').addEventListener('wheel', (event) => {
+    event.preventDefault();
+    event.currentTarget.scrollBy({
+        left: event.deltaY > 0 ? 300 : -300,
+        behavior: 'smooth'
+    });
+});
+
+
+
+
+// text
+document.getElementById("save-btn").addEventListener("click", saveChat);
+
+function saveChat() {
+    const messageBox = document.getElementById("messageBox");
+    const messages = messageBox.querySelectorAll(".chatbot-message, .user");
+    let chatHistory = "";
+
+    messages.forEach((message) => {
+        const sender = message.classList.contains("chatbot-message") ? "Chatbot" : "You";
+        chatHistory += `${sender}: ${message.textContent.trim()}\n`;
+    });
+
+    const blob = new Blob([chatHistory], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "chat_history.txt";
+    link.click();
+}
+
+
+  
+</script>    
+</body>
+</html>
